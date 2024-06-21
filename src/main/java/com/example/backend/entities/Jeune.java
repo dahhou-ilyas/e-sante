@@ -23,6 +23,12 @@ public class Jeune extends User{
     private boolean scolarise;
     private String cin;
 
+    @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
+    private AntecedentFamilial antecedentFamilial;
+
+    @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
+    private AntecedentPersonnel antecedentPersonnel;
+
     public Sexe getSexe() {
         return sexe;
     }
