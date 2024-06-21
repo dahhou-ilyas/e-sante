@@ -1,9 +1,7 @@
 package com.example.backend.entities;
 
 import com.example.backend.enums.Sexe;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +12,8 @@ import java.util.Date;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type_jeune")
 public class Jeune extends User{
     @Enumerated(EnumType.STRING)
     private Sexe sexe;
