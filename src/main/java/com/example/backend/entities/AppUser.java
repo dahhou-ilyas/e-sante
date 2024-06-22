@@ -14,6 +14,7 @@ public class AppUser {
     private Long id;
     private String nom;
     private String prenom;
+    @Column(unique = true)
     private String mail;
     private String numTele;
 

@@ -1,5 +1,6 @@
 package com.example.backend.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
 public class Medecin extends AppUser{
+    @Column(unique = true)
     private String cin ;
     private String inpe;
     private String ppr;
