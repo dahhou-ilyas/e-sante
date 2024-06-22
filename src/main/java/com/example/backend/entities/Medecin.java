@@ -17,5 +17,6 @@ public class Medecin extends AppUser{
     private Boolean estMedcinESJ;
     private Boolean estGeneraliste;
     private String specialite;
+    private String ROLE="MEDECIN";
 
 }
