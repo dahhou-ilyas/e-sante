@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/*
 @Entity
 @DiscriminatorValue("SCOLARISE")
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -18,3 +19,6 @@ public class JeuneScolarise extends Jeune{
     private String CNE;
     private String codeMASSAR;
 }
+
+
+ */

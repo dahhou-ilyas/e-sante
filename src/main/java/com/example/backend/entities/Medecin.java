@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
-public class Medecin extends User{
+public class Medecin extends AppUser{
     private String cin ;
     private String inpe;
     private String ppr;

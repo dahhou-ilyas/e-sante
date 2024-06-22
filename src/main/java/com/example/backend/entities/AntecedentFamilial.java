@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+/*
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -21,3 +22,6 @@ public class AntecedentFamilial {
     @JoinColumn(name = "jeune_id")
     private Jeune jeune;
 }
+
+
+ */

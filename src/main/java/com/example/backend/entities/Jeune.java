@@ -10,6 +10,8 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
+/*
+
 @Entity
 @AllArgsConstructor @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -88,3 +90,6 @@ public class Jeune extends User{
     }
 
 }
+
+
+ */
