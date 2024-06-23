@@ -10,13 +10,11 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
-/*
-
 @Entity
 @AllArgsConstructor @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_jeune")
-public class Jeune extends User{
+public class Jeune extends AppUser{
     @Enumerated(EnumType.STRING)
     private Sexe sexe;
     private Date dateNaissance;
@@ -90,6 +88,3 @@ public class Jeune extends User{
     }
 
 }
-
-
- */
