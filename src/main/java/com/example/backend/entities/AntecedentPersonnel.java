@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-/*
+
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
 public class AntecedentPersonnel {
@@ -26,6 +26,3 @@ public class AntecedentPersonnel {
     @ElementCollection
     private List<String> habitudes;
 }
-
-
- */

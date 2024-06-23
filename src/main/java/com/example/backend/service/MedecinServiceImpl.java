@@ -20,6 +20,7 @@ public class MedecinServiceImpl implements MedecinService {
     @Override
     public Medecin saveMecine(Medecin medecin) throws MedecinException {
         try {
+
             return medecinRepository.save(medecin);
         } catch (DataIntegrityViolationException e) {
             if (e.getCause() instanceof ConstraintViolationException) {
