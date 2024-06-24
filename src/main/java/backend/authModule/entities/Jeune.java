@@ -1,6 +1,6 @@
-package com.authModule.entities;
+package backend.authModule.entities;
 
-import com.authModule.enums.Sexe;
+import backend.authModule.enums.Sexe;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

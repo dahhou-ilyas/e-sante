@@ -1,4 +1,4 @@
-package com.authModule.entities;
+package backend.authModule.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,20 +9,16 @@ import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
-public class AntecedentPersonnel {
+public class AntecedentFamilial {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ElementCollection
+    private List<String> maladiesFamiliales;
+
     @OneToOne
     @JoinColumn(name = "jeune_id")
     private Jeune jeune;
-
-    @ElementCollection
-    private List<String> medicaux;
-
-    private Boolean chirurgicaux;
-
-    @ElementCollection
-    private List<String> habitudes;
 }
+

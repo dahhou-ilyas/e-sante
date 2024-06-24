@@ -1,6 +1,6 @@
-package com.authModule.entities;
+package backend.authModule.entities;
 
-import com.authModule.enums.NiveauEtudes;
+import backend.authModule.enums.NiveauEtudes;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
