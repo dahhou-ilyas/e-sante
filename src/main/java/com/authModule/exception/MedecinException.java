@@ -1,4 +1,4 @@
-package com.example.backend.exception;
+package com.authModule.exception;
 
 public class MedecinException extends Exception{
     public MedecinException(String message) {

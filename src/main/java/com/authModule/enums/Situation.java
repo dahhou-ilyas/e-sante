@@ -1,4 +1,4 @@
-package com.example.backend.enums;
+package com.authModule.enums;
 
 public enum Situation {
     CHOMAGE ,EN_ACTIVITE

@@ -1,4 +1,4 @@
-package com.example.backend.entities;
+package com.authModule.entities;
 
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;

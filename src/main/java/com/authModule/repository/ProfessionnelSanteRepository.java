@@ -1,6 +1,6 @@
-package com.example.backend.repository;
+package com.authModule.repository;
 
-import com.example.backend.entities.ProfessionnelSante;
+import com.authModule.entities.ProfessionnelSante;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProfessionnelSanteRepository extends JpaRepository<ProfessionnelSante,Long> {

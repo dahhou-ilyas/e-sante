@@ -1,6 +1,6 @@
-package com.example.backend.repository;
+package com.authModule.repository;
 
-import com.example.backend.entities.Jeune;
+import com.authModule.entities.Jeune;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JeuneRepository extends JpaRepository<Jeune,Long> {

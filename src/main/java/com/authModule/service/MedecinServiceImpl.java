@@ -1,8 +1,8 @@
-package com.example.backend.service;
+package com.authModule.service;
 
-import com.example.backend.entities.Medecin;
-import com.example.backend.exception.MedecinException;
-import com.example.backend.repository.MedecinRepository;
+import com.authModule.entities.Medecin;
+import com.authModule.exception.MedecinException;
+import com.authModule.repository.MedecinRepository;
 import lombok.AllArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -1,9 +1,9 @@
-package com.example.backend.web;
+package com.authModule.web;
 
 
-import com.example.backend.entities.Medecin;
-import com.example.backend.exception.MedecinException;
-import com.example.backend.service.MedecinService;
+import com.authModule.entities.Medecin;
+import com.authModule.exception.MedecinException;
+import com.authModule.service.MedecinService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
