@@ -1,6 +1,8 @@
 package backend.authModule.entities;
 
 import backend.authModule.enums.Sexe;
+import backend.authModule.exception.AgeNonValideException;
+import backend.authModule.exception.JeuneException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -22,7 +24,7 @@ public class Jeune extends AppUser{
     private int identifiantPatient;
     private boolean scolarise;
     private String cin;
-    private Boolean isConfirmed;
+    private Boolean isConfirmed = false;
 
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentFamilial antecedentFamilial;
@@ -42,7 +44,7 @@ public class Jeune extends AppUser{
         return dateNaissance;
     }
 
-    public void setDateNaissance(Date dateNaissance) {
+    public void setDateNaissance(Date dateNaissance) throws AgeNonValideException {
         this.dateNaissance = dateNaissance;
         LocalDate birthD=this.dateNaissance.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         this.age=calculateAge(birthD,LocalDate.now());
@@ -80,9 +82,14 @@ public class Jeune extends AppUser{
         this.cin = cin;
     }
 
-    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) throws AgeNonValideException {
         if (birthDate != null && currentDate != null) {
-            return Period.between(birthDate, currentDate).getYears();
+            int age= Period.between(birthDate, currentDate).getYears();
+            if(age>=10 && age<=30){
+                return age;
+            }else {
+                throw new AgeNonValideException("l'age doit être entre 10 et 30 ans");
+            }
         } else {
             throw new IllegalArgumentException("La date de naissance et la date actuelle ne doivent pas être nulles");
         }
