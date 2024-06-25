@@ -1,6 +1,7 @@
 package backend.authModule.web;
 
 import backend.authModule.entities.AntecedentFamilial;
+import backend.authModule.entities.AntecedentPersonnel;
 import backend.authModule.entities.Jeune;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.PhoneNonValideException;
@@ -26,6 +27,16 @@ public class JeunController {
         try {
             AntecedentFamilial savedAntecedentFamilial = jeuneService.addAntecedentFamilial(jeuneId, antecedentFamilial);
             return ResponseEntity.ok(savedAntecedentFamilial);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{jeuneId}/antecedents/personnels")
+    public ResponseEntity<?> addAntecedentPersonnel(@PathVariable Long jeuneId, @RequestBody AntecedentPersonnel antecedentPersonnel) {
+        try {
+            AntecedentPersonnel savedAntecedentPersonnel = jeuneService.addAntecedentPersonnel(jeuneId, antecedentPersonnel);
+            return ResponseEntity.ok(savedAntecedentPersonnel);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

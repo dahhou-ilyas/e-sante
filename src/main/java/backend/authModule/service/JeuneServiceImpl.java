@@ -42,6 +42,12 @@ public class JeuneServiceImpl implements JeuneService {
         return antecedentFamilialRepository.save(antecedentFamilial);
     }
 
+    public AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel) {
+        Jeune jeune = jeuneRepository.findById(jeuneId).orElseThrow(() -> new IllegalArgumentException("Jeune not found"));
+        antecedentPersonnel.setJeune(jeune);
+        return antecedentPersonnelRepository.save(antecedentPersonnel);
+    }
+
 
     private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
