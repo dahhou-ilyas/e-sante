@@ -22,6 +22,7 @@ public class Jeune extends AppUser{
     private int identifiantPatient;
     private boolean scolarise;
     private String cin;
+    private Boolean isConfirmed;
 
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentFamilial antecedentFamilial;
@@ -87,4 +88,10 @@ public class Jeune extends AppUser{
         }
     }
 
+    public void setIsConfirmed(Boolean isConfirmed){
+        this.isConfirmed=isConfirmed;
+    }
+    public Boolean getIsConfirmed(){
+        return isConfirmed;
+    }
 }
