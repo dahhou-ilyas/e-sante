@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/jeune")
 @AllArgsConstructor
@@ -39,6 +41,16 @@ public class JeunController {
             return ResponseEntity.ok(savedAntecedentPersonnel);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{jeuneId}/antecedents")
+    public ResponseEntity<?> getAntecedents(@PathVariable Long jeuneId) {
+        Optional<Jeune> jeune = jeuneService.getAntecedents(jeuneId);
+        if (jeune.isPresent()) {
+            return ResponseEntity.ok(jeune.get());
+        } else {
+            return ResponseEntity.badRequest().body("Jeune not found");
         }
     }
 

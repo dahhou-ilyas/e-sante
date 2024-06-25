@@ -8,6 +8,8 @@ import backend.authModule.exception.PhoneNonValideException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 public interface JeuneService {
     Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
@@ -15,4 +17,6 @@ public interface JeuneService {
     AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);
 
     AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
+
+    Optional<Jeune> getAntecedents(Long jeuneId);
 }
