@@ -32,6 +32,9 @@ public class Jeune extends AppUser{
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentPersonnel antecedentPersonnel;
 
+    @OneToOne(mappedBy = "jeune", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private ConfirmationToken confirmationToken;
+
     public Sexe getSexe() {
         return sexe;
     }

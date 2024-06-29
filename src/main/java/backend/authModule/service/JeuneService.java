@@ -19,4 +19,9 @@ public interface JeuneService {
     AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
 
     Optional<Jeune> getAntecedents(Long jeuneId);
+
+    void sendEmail(String to, String subject, String body);
+
+    void sendConfirmationEmail(String to, String token);
+    Jeune confirmEmail(String token);
 }

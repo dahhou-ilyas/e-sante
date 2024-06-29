@@ -2,17 +2,22 @@ package backend.authModule.service;
 
 import backend.authModule.entities.AntecedentFamilial;
 import backend.authModule.entities.AntecedentPersonnel;
+import backend.authModule.entities.ConfirmationToken;
 import backend.authModule.entities.Jeune;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.PhoneNonValideException;
 import backend.authModule.repository.AntecedentFamilialRepository;
 import backend.authModule.repository.AntecedentPersonnelRepository;
+import backend.authModule.repository.ConfirmationTokenRepository;
 import backend.authModule.repository.JeuneRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +31,10 @@ public class JeuneServiceImpl implements JeuneService {
 
     private AntecedentFamilialRepository antecedentFamilialRepository;
     private AntecedentPersonnelRepository antecedentPersonnelRepository;
+
+    private JavaMailSender mailSender;
+
+    private ConfirmationTokenRepository confirmationTokenRepository;
     @Override
     public Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
         if(!isValidEmail(jeune.getMail())){
@@ -33,7 +42,17 @@ public class JeuneServiceImpl implements JeuneService {
         }if(!isValidMoroccanPhoneNumber(jeune.getNumTele())){
             throw new PhoneNonValideException("Invalid phone number format");
         }
-        return jeuneRepository.save(jeune);
+        Jeune savedJeune = jeuneRepository.save(jeune);
+
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, savedJeune);
+        confirmationTokenRepository.save(confirmationToken);
+
+
+        sendConfirmationEmail(savedJeune.getMail(), token);
+
+        return savedJeune;
     }
 
     @Override
@@ -71,5 +90,32 @@ public class JeuneServiceImpl implements JeuneService {
         }
         Matcher matcher = pattern.matcher(phoneNumber);
         return matcher.matches();
+    }
+
+    public void sendEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+    }
+
+    public void sendConfirmationEmail(String to, String token) {
+        String confirmationUrl = "http://localhost:8080/jeunes/confirmation?token=" + token;
+        String subject = "Email Confirmation";
+        String body = "Please confirm your email by clicking the following link: " + confirmationUrl;
+        sendEmail(to, subject, body);
+    }
+
+    public Jeune confirmEmail(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
+        if (confirmationToken != null) {
+            Jeune jeune = confirmationToken.getJeune();
+            jeune.setIsConfirmed(true);
+            jeuneRepository.save(jeune);
+            return jeune;
+        } else {
+            throw new RuntimeException("Invalid confirmation token");
+        }
     }
 }

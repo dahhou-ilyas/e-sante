@@ -54,4 +54,10 @@ public class JeunController {
         }
     }
 
+    @GetMapping("/confirmation")
+    public ResponseEntity<?> confirmEmail(@RequestParam("token") String token) {
+        Jeune jeune = jeuneService.confirmEmail(token);
+        return ResponseEntity.ok("Email confirmed successfully");
+    }
+
 }
