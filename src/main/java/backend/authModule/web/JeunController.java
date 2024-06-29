@@ -4,12 +4,16 @@ import backend.authModule.entities.AntecedentFamilial;
 import backend.authModule.entities.AntecedentPersonnel;
 import backend.authModule.entities.Jeune;
 import backend.authModule.exception.EmailNonValideException;
+import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
 import backend.authModule.service.JeuneService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -45,12 +49,12 @@ public class JeunController {
     }
 
     @GetMapping("/{jeuneId}/antecedents")
-    public ResponseEntity<?> getAntecedents(@PathVariable Long jeuneId) {
-        Optional<Jeune> jeune = jeuneService.getAntecedents(jeuneId);
-        if (jeune.isPresent()) {
-            return ResponseEntity.ok(jeune.get());
-        } else {
-            return ResponseEntity.badRequest().body("Jeune not found");
+    public ResponseEntity<?> getAntecedents(@PathVariable Long jeuneId) throws JeuneException {
+        try {
+            Map<String, Object> result = jeuneService.getAntecedents(jeuneId);
+            return ResponseEntity.ok(result);
+        } catch (JeuneException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

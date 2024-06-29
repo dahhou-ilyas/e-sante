@@ -5,17 +5,21 @@ import backend.authModule.entities.AntecedentPersonnel;
 import backend.authModule.entities.ConfirmationToken;
 import backend.authModule.entities.Jeune;
 import backend.authModule.exception.EmailNonValideException;
+import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
 import backend.authModule.repository.AntecedentFamilialRepository;
 import backend.authModule.repository.AntecedentPersonnelRepository;
 import backend.authModule.repository.ConfirmationTokenRepository;
 import backend.authModule.repository.JeuneRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -68,8 +72,22 @@ public class JeuneServiceImpl implements JeuneService {
         return antecedentPersonnelRepository.save(antecedentPersonnel);
     }
 
-    public Optional<Jeune> getAntecedents(Long jeuneId) {
-        return jeuneRepository.findById(jeuneId);
+    public Map<String,Object> getAntecedents(Long jeuneId) throws JeuneException {
+        Optional<Jeune> saveJeune= jeuneRepository.findById(jeuneId);
+
+        if (saveJeune.isPresent()) {
+            Jeune jeune = saveJeune.get();
+            AntecedentFamilial antecedentFamilial = antecedentFamilialRepository.findByJeune(jeune)
+                    .orElseThrow(() -> new JeuneException("Antécédent familial non trouvé pour le jeune"));
+            AntecedentPersonnel antecedentPersonnel = antecedentPersonnelRepository.findByJeune(jeune)
+                    .orElseThrow(() -> new JeuneException("Antécédent personnel non trouvé pour le jeune"));
+            Map<String, Object> result = new HashMap<>();
+            result.put("AntecedentFamilial", antecedentFamilial);
+            result.put("AntecedentPersonnel", antecedentPersonnel);
+            return result;
+        } else {
+            throw new JeuneException("Jeune n'existe pas");
+        }
     }
 
     private boolean isValidEmail(String email) {

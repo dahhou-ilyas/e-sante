@@ -4,10 +4,12 @@ import backend.authModule.entities.AntecedentFamilial;
 import backend.authModule.entities.AntecedentPersonnel;
 import backend.authModule.entities.Jeune;
 import backend.authModule.exception.EmailNonValideException;
+import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -18,7 +20,7 @@ public interface JeuneService {
 
     AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
 
-    Optional<Jeune> getAntecedents(Long jeuneId);
+    Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException;
 
     void sendEmail(String to, String subject, String body);
 
