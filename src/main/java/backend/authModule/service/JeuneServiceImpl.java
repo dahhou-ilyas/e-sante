@@ -18,10 +18,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +43,11 @@ public class JeuneServiceImpl implements JeuneService {
         }if(!isValidMoroccanPhoneNumber(jeune.getNumTele())){
             throw new PhoneNonValideException("Invalid phone number format");
         }
+
+        int identifiant_patient = new Random().nextInt(900000) + 100000;
+
+        jeune.setIdentifiantPatient(identifiant_patient);
+
         Jeune savedJeune = jeuneRepository.save(jeune);
 
 

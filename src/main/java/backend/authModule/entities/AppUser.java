@@ -18,5 +18,6 @@ public class AppUser {
     @Column(unique = true)
     private String mail;
     private String numTele;
+    private String password;
 
 }

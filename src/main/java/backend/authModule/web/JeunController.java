@@ -2,10 +2,12 @@ package backend.authModule.web;
 
 import backend.authModule.entities.AntecedentFamilial;
 import backend.authModule.entities.AntecedentPersonnel;
+import backend.authModule.entities.AppUser;
 import backend.authModule.entities.Jeune;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
+import backend.authModule.repository.UserRepository;
 import backend.authModule.service.JeuneService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/jeune")
+@RequestMapping("/jeunes")
 @AllArgsConstructor
 public class JeunController {
     private JeuneService jeuneService;
