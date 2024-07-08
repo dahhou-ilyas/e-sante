@@ -1,9 +1,6 @@
 package backend.authModule.service;
 
-import backend.authModule.entities.AntecedentFamilial;
-import backend.authModule.entities.AntecedentPersonnel;
-import backend.authModule.entities.ConfirmationToken;
-import backend.authModule.entities.Jeune;
+import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
@@ -38,6 +35,7 @@ public class JeuneServiceImpl implements JeuneService {
     private ConfirmationTokenRepository confirmationTokenRepository;
     @Override
     public Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
+        /*
         if(!isValidEmail(jeune.getMail())){
             throw new EmailNonValideException("Invalid email format");
         }if(!isValidMoroccanPhoneNumber(jeune.getNumTele())){
@@ -58,7 +56,14 @@ public class JeuneServiceImpl implements JeuneService {
 
         sendConfirmationEmail(savedJeune.getMail(), token);
 
-        return savedJeune;
+
+         */
+        return null;
+    }
+
+    public JeuneScolarise saveJeuneScolarise(JeuneScolarise jeuneScolarise) {
+        // Ajouter toute logique de validation ou de traitement avant d'enregistrer
+        return jeuneRepository.save(jeuneScolarise);
     }
 
     @Override

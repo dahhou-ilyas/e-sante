@@ -1,21 +1,32 @@
 package backend.authModule.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
-public class Medecin extends AppUser{
+public class Medecin{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "app_user_id", referencedColumnName = "id")
+    private AppUser appUser;
+
     @Column(unique = true)
     private String cin ;
+    @Column(unique = true)
     private String inpe;
+    @Column(unique = true)
     private String ppr;
+
     private Boolean estMedcinESJ;
     private Boolean estGeneraliste;
     private String specialite;
     private String ROLE="MEDECIN";
+    private boolean confirmed =false;
 
 }

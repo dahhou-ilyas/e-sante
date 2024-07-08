@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/medecins")
@@ -18,6 +19,14 @@ public class MedecinController {
     @PostMapping
     public Medecin createMedcine(@RequestBody Medecin medecin) throws MedecinException {
         return medecinService.saveMecine(medecin);
+    }
+
+    //ajouté un endpoite pour la confirmation et le redérigé vers le frontend:
+    @GetMapping("/medecins/confirmation")
+    public RedirectView confirmEmail(@RequestParam("token") String token) {
+        //Medecin medecin = medecinService.confirmEmail(token);
+        // Redirection vers une vidéo YouTube après confirmation réussie
+        return new RedirectView("https://www.youtube.com/watch?v=VIDEO_ID");
     }
 
     @ExceptionHandler(MedecinException.class)

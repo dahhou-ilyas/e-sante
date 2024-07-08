@@ -19,8 +19,12 @@ public class ConfirmationToken {
     private String token;
 
     @OneToOne(targetEntity = Jeune.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "jeune_id")
+    @JoinColumn(nullable = true, name = "jeune_id")
     private Jeune jeune;
+
+    @OneToOne(targetEntity = Medecin.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = true, name = "medecin_id")
+    private Medecin medecin;
 
     private Date createdDate;
 

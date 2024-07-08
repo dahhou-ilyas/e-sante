@@ -5,6 +5,7 @@ import backend.authModule.exception.AgeNonValideException;
 import backend.authModule.exception.JeuneException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -13,10 +14,18 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Entity
-@AllArgsConstructor @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "type_jeune")
-public class Jeune extends AppUser{
+@DiscriminatorColumn(name = "type", length = 6, discriminatorType = DiscriminatorType.STRING)
+@AllArgsConstructor @NoArgsConstructor
+public class Jeune{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "app_user_id", referencedColumnName = "id")
+    private AppUser appUser;
+
     @Enumerated(EnumType.STRING)
     private Sexe sexe;
     private Date dateNaissance;

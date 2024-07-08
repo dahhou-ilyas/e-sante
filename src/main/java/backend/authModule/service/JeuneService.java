@@ -3,6 +3,7 @@ package backend.authModule.service;
 import backend.authModule.entities.AntecedentFamilial;
 import backend.authModule.entities.AntecedentPersonnel;
 import backend.authModule.entities.Jeune;
+import backend.authModule.entities.JeuneScolarise;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 
 public interface JeuneService {
+    JeuneScolarise saveJeuneScolarise(JeuneScolarise jeuneScolarise);
     Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
 
     AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);

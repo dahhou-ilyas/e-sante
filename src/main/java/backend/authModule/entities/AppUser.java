@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data @NoArgsConstructor @AllArgsConstructor
 public class AppUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nom;
     private String prenom;

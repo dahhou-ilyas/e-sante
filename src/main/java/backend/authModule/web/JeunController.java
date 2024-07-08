@@ -1,9 +1,6 @@
 package backend.authModule.web;
 
-import backend.authModule.entities.AntecedentFamilial;
-import backend.authModule.entities.AntecedentPersonnel;
-import backend.authModule.entities.AppUser;
-import backend.authModule.entities.Jeune;
+import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
@@ -21,9 +18,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/jeunes")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class JeunController {
     private JeuneService jeuneService;
 
+    @PostMapping("/scolarise")
+    public ResponseEntity<JeuneScolarise> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
+        JeuneScolarise savedJeune = jeuneService.saveJeuneScolarise(jeuneScolarise);
+        return ResponseEntity.ok(savedJeune);
+    }
+
+    // il faut defirencier entre un jeune scolarisé et non scolarisé pour crée un objet
+    // soit scolarisé ou non scolarisé pour stocké les donné compléte dans le db
     @PostMapping
     public ResponseEntity<?> saveJeune(@RequestBody Jeune jeune) throws PhoneNonValideException, EmailNonValideException {
         Jeune savedJeune=jeuneService.saveJeune(jeune);

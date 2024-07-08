@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@DiscriminatorValue("SCOLARISE")
+@DiscriminatorValue("SC")
 @Data @AllArgsConstructor @NoArgsConstructor
 public class JeuneScolarise extends Jeune{
     @Enumerated(EnumType.STRING)
