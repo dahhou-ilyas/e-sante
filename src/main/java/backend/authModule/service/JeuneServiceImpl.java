@@ -8,10 +8,13 @@ import backend.authModule.repository.AntecedentFamilialRepository;
 import backend.authModule.repository.AntecedentPersonnelRepository;
 import backend.authModule.repository.ConfirmationTokenRepository;
 import backend.authModule.repository.JeuneRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,9 @@ import java.util.regex.Pattern;
 //il faut ajouté de global hundler Exception
 public class JeuneServiceImpl implements JeuneService {
 
+    private static final long EXPIRATION_TIME_MS = 60 * 60 * 1000;
+
+    private Validatore validatore;
     private JeuneRepository jeuneRepository;
 
     private AntecedentFamilialRepository antecedentFamilialRepository;
@@ -36,9 +42,9 @@ public class JeuneServiceImpl implements JeuneService {
     @Override
     public Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
         /*
-        if(!isValidEmail(jeune.getMail())){
+        if(!validatore.isValidEmail(jeune.getMail())){
             throw new EmailNonValideException("Invalid email format");
-        }if(!isValidMoroccanPhoneNumber(jeune.getNumTele())){
+        }if(!validatore.isValidMoroccanPhoneNumber(jeune.getNumTele())){
             throw new PhoneNonValideException("Invalid phone number format");
         }
 
@@ -97,45 +103,40 @@ public class JeuneServiceImpl implements JeuneService {
         }
     }
 
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        if (email == null) {
-            return false;
-        }
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
+    public void sendEmail(String to, String subject, String htmlBody) {
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true); // true indique que le contenu est HTML
 
-    private boolean isValidMoroccanPhoneNumber(String phoneNumber) {
-        String phoneRegex = "^(\\+212|0)([5-7])\\d{8}$";
-        Pattern pattern = Pattern.compile(phoneRegex);
-        if (phoneNumber == null) {
-            return false;
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            // Gérer les exceptions liées à l'envoi de l'email
+            e.printStackTrace();
+            // Vous pouvez lancer une exception spécifique ou gérer l'erreur d'une autre manière
         }
-        Matcher matcher = pattern.matcher(phoneNumber);
-        return matcher.matches();
-    }
-
-    public void sendEmail(String to, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
     }
 
     public void sendConfirmationEmail(String to, String token) {
-        String confirmationUrl = "http://localhost:8080/jeunes/confirmation?token=" + token;
+        String confirmationUrl = "http://localhost:8080/medecins/confirmation?token=" + token;
         String subject = "Email Confirmation";
-        String body = "Please confirm your email by clicking the following link: " + confirmationUrl;
-        sendEmail(to, subject, body);
+        String htmlBody = "<p>Please confirm your email by clicking the following link:</p>"
+                + "<p><a href=\"" + confirmationUrl + "\">Confirm Email</a></p>";
+
+        sendEmail(to, subject, htmlBody);
     }
 
     public Jeune confirmEmail(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
         if (confirmationToken != null) {
+            Date now = new Date();
             Jeune jeune = confirmationToken.getJeune();
+            long diffMs = now.getTime() - confirmationToken.getCreatedDate().getTime();
+            if (diffMs > EXPIRATION_TIME_MS) {
+                throw new RuntimeException("Confirmation token has expired");
+            }
             jeune.setIsConfirmed(true);
             jeuneRepository.save(jeune);
             return jeune;
