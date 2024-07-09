@@ -3,8 +3,7 @@ package backend.authModule.entities;
 import backend.authModule.enums.Sexe;
 import backend.authModule.exception.AgeNonValideException;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -14,8 +13,10 @@ import java.util.Date;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", length = 6, discriminatorType = DiscriminatorType.STRING)
+@Data
 @AllArgsConstructor @NoArgsConstructor
 public class Jeune{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,10 +29,13 @@ public class Jeune{
     private Sexe sexe;
     private Date dateNaissance;
     private int age;
+    @Column(unique = true)
     private int identifiantPatient;
     private boolean scolarise;
+    @Column(unique = true)
     private String cin;
     private Boolean isConfirmed = false;
+    private Boolean isFirstAuth = true;
 
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentFamilial antecedentFamilial;
@@ -39,83 +43,4 @@ public class Jeune{
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentPersonnel antecedentPersonnel;
 
-
-
-    public Sexe getSexe() {
-        return sexe;
-    }
-
-    public void setSexe(Sexe sexe) {
-        this.sexe = sexe;
-    }
-
-    public Date getDateNaissance() {
-        return dateNaissance;
-    }
-
-    public void setDateNaissance(Date dateNaissance) throws AgeNonValideException {
-        this.dateNaissance = dateNaissance;
-        LocalDate birthD=this.dateNaissance.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        this.age=calculateAge(birthD,LocalDate.now());
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public AppUser getAppUser() {
-        return appUser;
-    }
-
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
-    }
-
-    public int getIdentifiantPatient() {
-        return identifiantPatient;
-    }
-
-    public void setIdentifiantPatient(int identifiantPatient) {
-        this.identifiantPatient = identifiantPatient;
-    }
-
-    public boolean isScolarise() {
-        return scolarise;
-    }
-
-    public void setScolarise(boolean scolarise) {
-        this.scolarise = scolarise;
-    }
-
-    public String getCin() {
-        return cin;
-    }
-
-    public void setCin(String cin) {
-        this.cin = cin;
-    }
-
-    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) throws AgeNonValideException {
-        if (birthDate != null && currentDate != null) {
-            int age= Period.between(birthDate, currentDate).getYears();
-            if(age>=10 && age<=30){
-                return age;
-            }else {
-                throw new AgeNonValideException("l'age doit être entre 10 et 30 ans");
-            }
-        } else {
-            throw new IllegalArgumentException("La date de naissance et la date actuelle ne doivent pas être nulles");
-        }
-    }
-
-    public void setIsConfirmed(Boolean isConfirmed){
-        this.isConfirmed=isConfirmed;
-    }
-    public Boolean getIsConfirmed(){
-        return isConfirmed;
-    }
 }

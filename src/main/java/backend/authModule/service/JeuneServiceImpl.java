@@ -18,6 +18,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +51,10 @@ public class JeuneServiceImpl implements JeuneService {
             throw new PhoneNonValideException("Invalid phone number format");
         }
 
+        LocalDate birthDate = jeune.getDateNaissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
+        jeune.setAge(age);
+
         int identifiant_patient = new Random().nextInt(900000) + 100000;
 
         jeune.setIdentifiantPatient(identifiant_patient);
@@ -62,9 +69,6 @@ public class JeuneServiceImpl implements JeuneService {
         return savedJeune;
     }
 
-    public JeuneScolarise saveJeuneScolarise(JeuneScolarise jeuneScolarise) {
-        return jeuneRepository.save(jeuneScolarise);
-    }
 
     @Override
     public AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial) {

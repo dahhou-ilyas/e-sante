@@ -22,18 +22,26 @@ import java.util.Optional;
 public class JeunController {
     private JeuneService jeuneService;
 
-    @PostMapping("/scolarise")
-    public ResponseEntity<JeuneScolarise> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
-        JeuneScolarise savedJeune = jeuneService.saveJeuneScolarise(jeuneScolarise);
-        return ResponseEntity.ok(savedJeune);
-    }
-
     // il faut defirencier entre un jeune scolarisé et non scolarisé pour crée un objet
     // soit scolarisé ou non scolarisé pour stocké les donné compléte dans le db
-    @PostMapping
-    public ResponseEntity<?> saveJeune(@RequestBody Jeune jeune) throws PhoneNonValideException, EmailNonValideException {
-        Jeune savedJeune=jeuneService.saveJeune(jeune);
-        return ResponseEntity.ok(savedJeune);
+    @PostMapping("/scolarise")
+    public ResponseEntity<Jeune> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
+        try {
+            Jeune savedJeune = jeuneService.saveJeune(jeuneScolarise);
+            return ResponseEntity.ok(savedJeune);
+        } catch (EmailNonValideException | PhoneNonValideException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/nonscolarise")
+    public ResponseEntity<Jeune> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
+        try {
+            Jeune savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
+            return ResponseEntity.ok(savedJeune);
+        } catch (EmailNonValideException | PhoneNonValideException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PostMapping("/{jeuneId}/antecedents/familiaux")

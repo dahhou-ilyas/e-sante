@@ -1,10 +1,7 @@
 package backend.authModule.entities;
 
 import backend.authModule.enums.NiveauEtudes;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class JeuneScolarise extends Jeune{
     @Enumerated(EnumType.STRING)
     private NiveauEtudes niveauEtudesActuel;
+    @Column(unique = true)
     private String CNE;
+    @Column(unique = true)
     private String codeMASSAR;
 }
