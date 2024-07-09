@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/jeunes")
+@RequestMapping("/register/jeunes")
 @AllArgsConstructor
 @CrossOrigin("*")
 public class JeunController {

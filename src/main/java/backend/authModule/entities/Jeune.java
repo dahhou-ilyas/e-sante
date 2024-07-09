@@ -35,6 +35,7 @@ public class Jeune{
     private String cin;
     private Boolean isConfirmed = false;
 
+
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentFamilial antecedentFamilial;
 

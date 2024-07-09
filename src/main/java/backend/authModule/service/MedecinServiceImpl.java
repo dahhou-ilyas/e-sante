@@ -56,9 +56,9 @@ public class MedecinServiceImpl implements MedecinService {
             String token = UUID.randomUUID().toString();
             ConfirmationToken confirmationToken = new ConfirmationToken();
             confirmationToken.setMedecin(savedMedecin);
+            confirmationToken.setCreatedDate(new Date());
             confirmationToken.setToken(token);
             confirmationTokenRepository.save(confirmationToken);
-
             sendConfirmationEmail(savedMedecin.getAppUser().getMail(),token);
             return savedMedecin;
         } catch (DataIntegrityViolationException e) {
@@ -75,14 +75,8 @@ public class MedecinServiceImpl implements MedecinService {
         }
     }
 
-    public void sendConfirmationEmail(String to, String token) {
-        String confirmationUrl = "http://localhost:8080/medecins/confirmation?token=" + token;
-        String subject = "Email Confirmation";
-        String htmlBody = "<p>Please confirm your email by clicking the following link:</p>"
-                + "<p><a href=\"" + confirmationUrl + "\">Confirm Email</a></p>";
 
-        sendEmail(to, subject, htmlBody);
-    }
+    @Override
     public Medecin confirmEmail(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
         if (confirmationToken != null) {
@@ -99,7 +93,8 @@ public class MedecinServiceImpl implements MedecinService {
             throw new RuntimeException("Invalid confirmation token");
         }
     }
-    private void sendEmail(String to, String subject, String htmlBody) {
+    @Override
+    public void sendEmail(String to, String subject, String htmlBody) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -109,9 +104,7 @@ public class MedecinServiceImpl implements MedecinService {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            // Gérer les exceptions liées à l'envoi de l'email
             e.printStackTrace();
-            // Vous pouvez lancer une exception spécifique ou gérer l'erreur d'une autre manière
         }
     }
 

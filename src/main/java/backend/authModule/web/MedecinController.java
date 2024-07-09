@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
-@RequestMapping("/medecins")
+@RequestMapping("/register/medecins")
 @AllArgsConstructor
 public class MedecinController {
     private MedecinService medecinService;
@@ -21,11 +21,13 @@ public class MedecinController {
         return medecinService.saveMecine(medecin);
     }
 
-    //ajouté un endpoite pour la confirmation et le redérigé vers le frontend:
-    @GetMapping("/medecins/confirmation")
+
+
+    @GetMapping("/confirmation")
     public RedirectView confirmEmail(@RequestParam("token") String token) {
-        //Medecin medecin = medecinService.confirmEmail(token);
-        // Redirection vers une vidéo YouTube après confirmation réussie
+
+        Medecin medecin = medecinService.confirmEmail(token);
+
         return new RedirectView("https://www.youtube.com/watch?v=VIDEO_ID");
     }
 
