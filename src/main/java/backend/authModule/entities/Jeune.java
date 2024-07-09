@@ -37,6 +37,8 @@ public class Jeune{
     private Boolean isConfirmed = false;
     private Boolean isFirstAuth = true;
 
+    private String ROLE="JEUNE";
+
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentFamilial antecedentFamilial;
 

@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -86,8 +87,48 @@ public class MedecinServiceImpl implements MedecinService {
     }
 
     @Override
-    public void updateMedecin(Long id, Medecin medecin) throws MedecinNotFoundException, MedecinException {
+    public void updateMedecin(Long id, Medecin updatedMedecin) throws MedecinNotFoundException, MedecinException {
+        Optional<Medecin> existingMedecinOptional = medecinRepository.findById(id);
+        if (existingMedecinOptional.isPresent()){
+            Medecin existingMedecin = existingMedecinOptional.get();
+            updateAppUserFields(existingMedecin.getAppUser(), updatedMedecin.getAppUser());
+            updateMedecinFields(existingMedecin, updatedMedecin);
+        }
+    }
+    private void updateMedecinFields(Medecin existingMedecin, Medecin updatedMedecin) {
+        if (updatedMedecin.getCin() != null) {
+            existingMedecin.setCin(updatedMedecin.getCin());
+        }
+        if (updatedMedecin.getInpe() != null) {
+            existingMedecin.setInpe(updatedMedecin.getInpe());
+        }
+        if (updatedMedecin.getPpr() != null) {
+            existingMedecin.setPpr(updatedMedecin.getPpr());
+        }
+        if (updatedMedecin.getEstMedcinESJ() != null) {
+            existingMedecin.setEstMedcinESJ(updatedMedecin.getEstMedcinESJ());
+        }
+        if (updatedMedecin.getEstGeneraliste() != null) {
+            existingMedecin.setEstGeneraliste(updatedMedecin.getEstGeneraliste());
+        }
+        if (updatedMedecin.getSpecialite() != null) {
+            existingMedecin.setSpecialite(updatedMedecin.getSpecialite());
+        }
+    }
+    private void updateAppUserFields(AppUser existingAppUser, AppUser updatedAppUser){
+        Field[] fields = AppUser.class.getDeclaredFields();
+        for (Field field : fields){
+            field.setAccessible(true);
+            try {
+                Object updatedValue = field.get(updatedAppUser);
 
+                if (updatedValue != null) {
+                    field.set(existingAppUser, updatedValue);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
