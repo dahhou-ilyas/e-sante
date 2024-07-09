@@ -41,10 +41,10 @@ public class JeuneServiceImpl implements JeuneService {
     private ConfirmationTokenRepository confirmationTokenRepository;
     @Override
     public Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
-        /*
-        if(!validatore.isValidEmail(jeune.getMail())){
+
+        if(!validatore.isValidEmail(jeune.getAppUser().getMail())){
             throw new EmailNonValideException("Invalid email format");
-        }if(!validatore.isValidMoroccanPhoneNumber(jeune.getNumTele())){
+        }if(!validatore.isValidMoroccanPhoneNumber(jeune.getAppUser().getNumTele())){
             throw new PhoneNonValideException("Invalid phone number format");
         }
 
@@ -54,21 +54,15 @@ public class JeuneServiceImpl implements JeuneService {
 
         Jeune savedJeune = jeuneRepository.save(jeune);
 
-
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(token, savedJeune);
         confirmationTokenRepository.save(confirmationToken);
+        sendConfirmationEmail(savedJeune.getAppUser().getMail(), token);
 
-
-        sendConfirmationEmail(savedJeune.getMail(), token);
-
-
-         */
-        return null;
+        return savedJeune;
     }
 
     public JeuneScolarise saveJeuneScolarise(JeuneScolarise jeuneScolarise) {
-        // Ajouter toute logique de validation ou de traitement avant d'enregistrer
         return jeuneRepository.save(jeuneScolarise);
     }
 
@@ -103,6 +97,8 @@ public class JeuneServiceImpl implements JeuneService {
         }
     }
 
+
+    @Override
     public void sendEmail(String to, String subject, String htmlBody) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
@@ -110,24 +106,12 @@ public class JeuneServiceImpl implements JeuneService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlBody, true); // true indique que le contenu est HTML
-
             mailSender.send(message);
         } catch (MessagingException e) {
-            // Gérer les exceptions liées à l'envoi de l'email
             e.printStackTrace();
-            // Vous pouvez lancer une exception spécifique ou gérer l'erreur d'une autre manière
         }
     }
-
-    public void sendConfirmationEmail(String to, String token) {
-        String confirmationUrl = "http://localhost:8080/medecins/confirmation?token=" + token;
-        String subject = "Email Confirmation";
-        String htmlBody = "<p>Please confirm your email by clicking the following link:</p>"
-                + "<p><a href=\"" + confirmationUrl + "\">Confirm Email</a></p>";
-
-        sendEmail(to, subject, htmlBody);
-    }
-
+    @Override
     public Jeune confirmEmail(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
         if (confirmationToken != null) {

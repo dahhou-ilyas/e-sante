@@ -2,10 +2,8 @@ package backend.authModule.entities;
 
 import backend.authModule.enums.Sexe;
 import backend.authModule.exception.AgeNonValideException;
-import backend.authModule.exception.JeuneException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -34,7 +32,6 @@ public class Jeune{
     private boolean scolarise;
     private String cin;
     private Boolean isConfirmed = false;
-
 
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentFamilial antecedentFamilial;
@@ -68,6 +65,14 @@ public class Jeune{
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public AppUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     public int getIdentifiantPatient() {

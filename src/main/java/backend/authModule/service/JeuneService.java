@@ -20,7 +20,4 @@ public interface JeuneService extends ConfirmeMailService<Jeune> {
     AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);
     AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
     Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException;
-    void sendEmail(String to, String subject, String body);
-    void sendConfirmationEmail(String to, String token);
-    Jeune confirmEmail(String token);
 }
