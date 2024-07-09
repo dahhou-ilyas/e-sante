@@ -4,6 +4,7 @@ import backend.authModule.entities.AppUser;
 import backend.authModule.entities.ConfirmationToken;
 import backend.authModule.entities.Medecin;
 import backend.authModule.exception.MedecinException;
+import backend.authModule.exception.MedecinNotFoundException;
 import backend.authModule.repository.ConfirmationTokenRepository;
 import backend.authModule.repository.MedecinRepository;
 import backend.authModule.repository.UserRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -72,6 +74,33 @@ public class MedecinServiceImpl implements MedecinService {
                 }
             }
             throw new MedecinException("Une erreur s'est produite lors de l'enregistrement du médecin", e);
+        }
+    }
+
+    public Medecin getMedecinById(Long id) throws MedecinNotFoundException {
+        Optional<Medecin> medecinOptional = medecinRepository.findById(id);
+        if (medecinOptional.isEmpty()) {
+            throw new MedecinNotFoundException("Médecin non trouvé avec l'ID : " + id);
+        }
+        return medecinOptional.get();
+    }
+
+    @Override
+    public void updateMedecin(Long id, Medecin medecin) throws MedecinNotFoundException, MedecinException {
+
+    }
+
+    @Override
+    public void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException {
+        Optional<Medecin> medecinOptional = medecinRepository.findById(id);
+        if (medecinOptional.isPresent()) {
+            try {
+                medecinRepository.delete(medecinOptional.get());
+            } catch (Exception e) {
+                throw new MedecinException("Une erreur s'est produite lors de la suppression du médecin", e);
+            }
+        } else {
+            throw new MedecinNotFoundException("Médecin non trouvé avec l'ID : " + id);
         }
     }
 
