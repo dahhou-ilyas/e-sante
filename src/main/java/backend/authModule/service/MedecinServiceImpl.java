@@ -1,10 +1,12 @@
 package backend.authModule.service;
 
+import backend.authModule.dto.MedecinResponseDTO;
 import backend.authModule.entities.AppUser;
 import backend.authModule.entities.ConfirmationToken;
 import backend.authModule.entities.Medecin;
 import backend.authModule.exception.MedecinException;
 import backend.authModule.exception.MedecinNotFoundException;
+import backend.authModule.mappers.MedecineMapper;
 import backend.authModule.repository.ConfirmationTokenRepository;
 import backend.authModule.repository.MedecinRepository;
 import backend.authModule.repository.UserRepository;
@@ -34,13 +36,14 @@ public class MedecinServiceImpl implements MedecinService {
 
     private MedecinRepository medecinRepository;
     private UserRepository userRepository;
+    private MedecineMapper medecineMapper;
 
     private ConfirmationTokenRepository confirmationTokenRepository;
     private JavaMailSender mailSender;
 
 
     @Override
-    public Medecin saveMecine(Medecin medecin) throws MedecinException {
+    public MedecinResponseDTO saveMecine(Medecin medecin) throws MedecinException {
 
         try {
             AppUser appUser = new AppUser();
@@ -63,7 +66,8 @@ public class MedecinServiceImpl implements MedecinService {
             confirmationToken.setToken(token);
             confirmationTokenRepository.save(confirmationToken);
             sendConfirmationEmail(savedMedecin.getAppUser().getMail(),token);
-            return savedMedecin;
+            MedecinResponseDTO medecinResponseDTO = medecineMapper.fromMedcine(savedMedecin);
+            return medecinResponseDTO;
         } catch (DataIntegrityViolationException e) {
             if (e.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException cause = (ConstraintViolationException) e.getCause();
@@ -78,12 +82,13 @@ public class MedecinServiceImpl implements MedecinService {
         }
     }
 
-    public Medecin getMedecinById(Long id) throws MedecinNotFoundException {
+    public MedecinResponseDTO getMedecinById(Long id) throws MedecinNotFoundException {
         Optional<Medecin> medecinOptional = medecinRepository.findById(id);
         if (medecinOptional.isEmpty()) {
             throw new MedecinNotFoundException("Médecin non trouvé avec l'ID : " + id);
         }
-        return medecinOptional.get();
+        MedecinResponseDTO medecinResponseDTO=medecineMapper.fromMedcine(medecinOptional.get());
+        return medecinResponseDTO;
     }
 
     @Override

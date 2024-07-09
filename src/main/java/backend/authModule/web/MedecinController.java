@@ -1,6 +1,7 @@
 package backend.authModule.web;
 
 
+import backend.authModule.dto.MedecinResponseDTO;
 import backend.authModule.entities.Medecin;
 import backend.authModule.exception.MedecinException;
 import backend.authModule.exception.MedecinNotFoundException;
@@ -18,7 +19,7 @@ public class MedecinController {
     private MedecinService medecinService;
 
     @PostMapping
-    public Medecin createMedcine(@RequestBody Medecin medecin) throws MedecinException {
+    public MedecinResponseDTO createMedcine(@RequestBody Medecin medecin) throws MedecinException {
         return medecinService.saveMecine(medecin);
     }
 
@@ -34,9 +35,9 @@ public class MedecinController {
         }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Medecin> getMedecinById(@PathVariable Long id) {
+    public ResponseEntity<MedecinResponseDTO> getMedecinById(@PathVariable Long id) {
         try {
-            Medecin medecin = medecinService.getMedecinById(id);
+            MedecinResponseDTO medecin = medecinService.getMedecinById(id);
             return ResponseEntity.ok(medecin);
         } catch (MedecinNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
