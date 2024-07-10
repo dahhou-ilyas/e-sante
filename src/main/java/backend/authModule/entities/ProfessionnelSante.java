@@ -17,7 +17,9 @@ public class ProfessionnelSante {
     @JoinColumn(name = "app_user_id", referencedColumnName = "id")
     private AppUser appUser;
 
+    @Column(unique = true)
     private String cin;
+    @Column(unique = true)
     private String inpe;
 
 }

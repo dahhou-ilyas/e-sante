@@ -1,5 +1,6 @@
 package backend.authModule.web;
 
+import backend.authModule.dto.JeuneDTO;
 import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
@@ -25,9 +26,9 @@ public class JeunController {
     // il faut defirencier entre un jeune scolarisé et non scolarisé pour crée un objet
     // soit scolarisé ou non scolarisé pour stocké les donné compléte dans le db
     @PostMapping("/scolarise")
-    public ResponseEntity<Jeune> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
+    public ResponseEntity<JeuneDTO> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
         try {
-            Jeune savedJeune = jeuneService.saveJeune(jeuneScolarise);
+            JeuneDTO savedJeune = jeuneService.saveJeune(jeuneScolarise);
             return ResponseEntity.ok(savedJeune);
         } catch (EmailNonValideException | PhoneNonValideException e) {
             return ResponseEntity.badRequest().body(null);
@@ -35,9 +36,9 @@ public class JeunController {
     }
 
     @PostMapping("/nonscolarise")
-    public ResponseEntity<Jeune> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
+    public ResponseEntity<JeuneDTO> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
         try {
-            Jeune savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
+            JeuneDTO savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
             return ResponseEntity.ok(savedJeune);
         } catch (EmailNonValideException | PhoneNonValideException e) {
             return ResponseEntity.badRequest().body(null);

@@ -1,5 +1,6 @@
 package backend.authModule.service;
 
+import backend.authModule.dto.JeuneDTO;
 import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 public interface JeuneService extends ConfirmeMailService<Jeune> {
 
-    Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
+    JeuneDTO saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException;
     AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);
     AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
     Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException;

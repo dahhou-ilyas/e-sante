@@ -46,17 +46,6 @@ public class MedecinServiceImpl implements MedecinService {
     public MedecinResponseDTO saveMecine(Medecin medecin) throws MedecinException {
 
         try {
-            AppUser appUser = new AppUser();
-            appUser.setNom(medecin.getAppUser().getNom());
-            appUser.setMail(medecin.getAppUser().getMail());
-            appUser.setPrenom(medecin.getAppUser().getPrenom());
-            appUser.setPassword(medecin.getAppUser().getPassword());
-            appUser.setNumTele(medecin.getAppUser().getNumTele());
-            AppUser savedAppUser = userRepository.save(appUser);
-            System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            System.out.println(savedAppUser);
-            System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            medecin.setAppUser(savedAppUser);
             Medecin savedMedecin = medecinRepository.save(medecin);
 
             String token = UUID.randomUUID().toString();

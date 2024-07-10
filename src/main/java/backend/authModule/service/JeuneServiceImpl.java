@@ -1,9 +1,11 @@
 package backend.authModule.service;
 
+import backend.authModule.dto.JeuneDTO;
 import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
 import backend.authModule.exception.PhoneNonValideException;
+import backend.authModule.mappers.JeuneMapper;
 import backend.authModule.repository.AntecedentFamilialRepository;
 import backend.authModule.repository.AntecedentPersonnelRepository;
 import backend.authModule.repository.ConfirmationTokenRepository;
@@ -33,6 +35,7 @@ public class JeuneServiceImpl implements JeuneService {
 
     private static final long EXPIRATION_TIME_MS = 60 * 60 * 1000;
 
+    private JeuneMapper jeuneMapper;
     private Validatore validatore;
     private JeuneRepository jeuneRepository;
 
@@ -43,7 +46,7 @@ public class JeuneServiceImpl implements JeuneService {
 
     private ConfirmationTokenRepository confirmationTokenRepository;
     @Override
-    public Jeune saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
+    public JeuneDTO saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
 
         if(!validatore.isValidEmail(jeune.getAppUser().getMail())){
             throw new EmailNonValideException("Invalid email format");
@@ -66,7 +69,8 @@ public class JeuneServiceImpl implements JeuneService {
         confirmationTokenRepository.save(confirmationToken);
         sendConfirmationEmail(savedJeune.getAppUser().getMail(), token);
 
-        return savedJeune;
+        JeuneDTO jeuneDTO=jeuneMapper.fromJeune(savedJeune);
+        return jeuneDTO;
     }
 
 
