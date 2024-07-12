@@ -17,14 +17,17 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/register/jeunes")
+@RequestMapping("/jeunes")
 @AllArgsConstructor
 @CrossOrigin("*")
 public class JeunController {
     private JeuneService jeuneService;
 
-    // il faut defirencier entre un jeune scolarisé et non scolarisé pour crée un objet
-    // soit scolarisé ou non scolarisé pour stocké les donné compléte dans le db
+    @GetMapping
+    public ResponseEntity<JeuneDTO> getAllJeune(){
+        return null;
+    }
+
     @PostMapping("/scolarise")
     public ResponseEntity<JeuneDTO> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
         try {
