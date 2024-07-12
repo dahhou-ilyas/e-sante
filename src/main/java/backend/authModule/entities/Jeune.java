@@ -44,5 +44,4 @@ public class Jeune{
 
     @OneToOne(mappedBy = "jeune" , cascade = CascadeType.ALL)
     private AntecedentPersonnel antecedentPersonnel;
-
 }

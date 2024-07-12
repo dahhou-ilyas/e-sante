@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/medecins")
 @AllArgsConstructor
@@ -21,6 +23,12 @@ public class MedecinController {
     @PostMapping
     public MedecinResponseDTO createMedcine(@RequestBody Medecin medecin) throws MedecinException {
         return medecinService.saveMecine(medecin);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MedecinResponseDTO> patchMedecin(@PathVariable Long id, @RequestBody Map<String, Object> updates) throws MedecinNotFoundException {
+        MedecinResponseDTO updatedMedecin = medecinService.updateMedecinPartial(id, updates);
+        return ResponseEntity.ok(updatedMedecin);
     }
 
     @DeleteMapping("/{id}")

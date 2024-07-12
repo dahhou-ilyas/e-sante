@@ -5,6 +5,7 @@ import backend.authModule.entities.Medecin;
 import backend.authModule.exception.MedecinException;
 import backend.authModule.exception.MedecinNotFoundException;
 
+import java.util.Map;
 import java.util.Optional;
 
 public interface MedecinService extends ConfirmeMailService<Medecin> {
@@ -12,7 +13,7 @@ public interface MedecinService extends ConfirmeMailService<Medecin> {
 
     MedecinResponseDTO getMedecinById(Long id) throws MedecinNotFoundException;
 
-    void updateMedecin(Long id, Medecin medecin) throws MedecinNotFoundException, MedecinException;
+    MedecinResponseDTO updateMedecinPartial(Long id, Map<String, Object> updates) throws MedecinNotFoundException;
 
     void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException;
 }
