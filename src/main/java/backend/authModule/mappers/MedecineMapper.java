@@ -10,6 +10,7 @@ public class MedecineMapper {
     public MedecinResponseDTO fromMedcine(Medecin medecin){
         MedecinResponseDTO medecinResponseDTO=new MedecinResponseDTO();
         medecinResponseDTO.setId(medecin.getId());
+        medecinResponseDTO.setPrenom(medecin.getAppUser().getPrenom());
         medecinResponseDTO.setNom(medecin.getAppUser().getNom());
         medecinResponseDTO.setMail(medecin.getAppUser().getMail());
         medecinResponseDTO.setCin(medecin.getCin());

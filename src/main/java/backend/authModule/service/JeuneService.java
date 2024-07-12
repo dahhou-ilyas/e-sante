@@ -4,6 +4,7 @@ import backend.authModule.dto.JeuneDTO;
 import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
+import backend.authModule.exception.JeuneNotFoundException;
 import backend.authModule.exception.PhoneNonValideException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,4 +19,5 @@ public interface JeuneService extends ConfirmeMailService<Jeune> {
     AntecedentFamilial addAntecedentFamilial(Long jeuneId, AntecedentFamilial antecedentFamilial);
     AntecedentPersonnel addAntecedentPersonnel(Long jeuneId, AntecedentPersonnel antecedentPersonnel);
     Map<String, Object> getAntecedents(Long jeuneId) throws JeuneException;
+    Object getJeuneById(Long id) throws JeuneNotFoundException;
 }

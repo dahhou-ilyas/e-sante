@@ -1,9 +1,12 @@
 package backend.authModule.service;
 
 import backend.authModule.dto.JeuneDTO;
+import backend.authModule.dto.JeuneNonScolariseDto;
+import backend.authModule.dto.JeuneScolariseDto;
 import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
+import backend.authModule.exception.JeuneNotFoundException;
 import backend.authModule.exception.PhoneNonValideException;
 import backend.authModule.mappers.JeuneMapper;
 import backend.authModule.repository.AntecedentFamilialRepository;
@@ -106,6 +109,22 @@ public class JeuneServiceImpl implements JeuneService {
     }
 
 
+    public Object getJeuneById(Long id) throws JeuneNotFoundException {
+
+
+        Jeune jeune= jeuneRepository.findById(id).orElseThrow(() -> new JeuneNotFoundException("Jeune not found for this id :: " + id));
+        if(jeune.isScolarise()){
+            JeuneScolarise scolarise=(JeuneScolarise) jeune;
+            return jeuneMapper.fromJeuneScolarise(scolarise);
+        }else {
+            JeuneNonScolarise nonScolarise =(JeuneNonScolarise) jeune;
+            return  jeuneMapper.fromJeuneNonScolarise(nonScolarise);
+        }
+    }
+
+
+
+
     @Override
     public void sendEmail(String to, String subject, String htmlBody) {
         MimeMessage message = mailSender.createMimeMessage();
@@ -136,4 +155,6 @@ public class JeuneServiceImpl implements JeuneService {
             throw new RuntimeException("Invalid confirmation token");
         }
     }
+
+
 }

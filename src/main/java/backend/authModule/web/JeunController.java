@@ -4,10 +4,12 @@ import backend.authModule.dto.JeuneDTO;
 import backend.authModule.entities.*;
 import backend.authModule.exception.EmailNonValideException;
 import backend.authModule.exception.JeuneException;
+import backend.authModule.exception.JeuneNotFoundException;
 import backend.authModule.exception.PhoneNonValideException;
 import backend.authModule.repository.UserRepository;
 import backend.authModule.service.JeuneService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +25,14 @@ import java.util.Optional;
 public class JeunController {
     private JeuneService jeuneService;
 
-    @GetMapping
-    public ResponseEntity<JeuneDTO> getAllJeune(){
-        return null;
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) {
+        try {
+            Object jeune = jeuneService.getJeuneById(id);
+            return ResponseEntity.ok().body(jeune);
+        } catch (JeuneNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping("/scolarise")

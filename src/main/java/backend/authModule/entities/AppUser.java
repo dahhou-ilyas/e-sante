@@ -18,5 +18,4 @@ public class AppUser {
     private String mail;
     private String numTele;
     private String password;
-
 }
