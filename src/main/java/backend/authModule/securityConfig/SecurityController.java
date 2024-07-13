@@ -5,6 +5,7 @@ import backend.authModule.entities.Medecin;
 import backend.authModule.repository.JeuneRepository;
 import backend.authModule.repository.MedecinRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,25 +28,84 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth/login")
-@AllArgsConstructor
+
 public class SecurityController {
 
-    private AuthenticationManager authenticationManager;
+
     private JwtEncoder jwtEncoder;
     private JeuneRepository jeuneRepository;
     private MedecinRepository medecinRepository;
+    private final AuthenticationManager authenticationManagerJeune;
+    private final AuthenticationManager authenticationManagerMedecin;
 
-    @PostMapping
+    public SecurityController(JwtEncoder jwtEncoder, JeuneRepository jeuneRepository, MedecinRepository medecinRepository,
+                              @Qualifier("authenticationManagerJeune") AuthenticationManager authenticationManagerJeune,
+                              @Qualifier("authenticationManagerMedecin") AuthenticationManager authenticationManagerMedecin) {
+        this.authenticationManagerJeune = authenticationManagerJeune;
+        this.authenticationManagerMedecin = authenticationManagerMedecin;
+        this.jwtEncoder = jwtEncoder;
+        this.jeuneRepository = jeuneRepository;
+        this.medecinRepository = medecinRepository;
+    }
+
+
+
+    @PostMapping("/jeunes")
     public Map<String, String> login(@RequestBody Map<String, String> loginData) {
         String username = loginData.get("username");
         String password = loginData.get("password");
 
-        Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManagerJeune.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
 
         Instant instant = Instant.now();
 
         Jeune jeune = jeuneRepository.findByMailOrCinOrCNEOrCodeMASSAR(username).orElse(null);
+
+
+        String scope = authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .collect(Collectors.joining(" "));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("username", username);
+        claims.put("role", scope);
+
+        if (jeune != null) {
+            claims.put("id", jeune.getId());
+            claims.put("nom", jeune.getAppUser().getNom());
+            claims.put("prenom", jeune.getAppUser().getPrenom());
+            claims.put("mail", jeune.getAppUser().getMail());
+            claims.put("confirmed",jeune.getIsConfirmed());
+            claims.put("isFirstAuth",jeune.getIsFirstAuth());
+        }
+
+        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                .issuedAt(instant)
+                .expiresAt(instant.plus(10, ChronoUnit.MINUTES))
+                .subject(username)
+                .claim("claims",claims)
+                .build();
+
+        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                JwsHeader.with(MacAlgorithm.HS512).build(),
+                jwtClaimsSet
+        );
+
+        String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+        return Map.of("access-token", jwt);
+    }
+
+    @PostMapping("/medecins")
+    public Map<String, String> loginMedcin(@RequestBody Map<String, String> loginData) {
+        String username = loginData.get("username");
+        String password = loginData.get("password");
+
+        Authentication authentication = authenticationManagerMedecin.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
+
+        Instant instant = Instant.now();
+
         Medecin medecin = medecinRepository.findByCinOrMail(username).orElse(null);
 
 
@@ -55,24 +115,15 @@ public class SecurityController {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
-        claims.put("scope", scope);
+        claims.put("role", scope);
 
         if (medecin != null) {
             claims.put("id", medecin.getId());
             claims.put("nom", medecin.getAppUser().getNom());
             claims.put("prenom", medecin.getAppUser().getPrenom());
             claims.put("mail", medecin.getAppUser().getMail());
-            claims.put("role", medecin.getROLE());
             claims.put("confirmed",medecin.isConfirmed());
             claims.put("isFirstAuth",medecin.getIsFirstAuth());
-        } else if (jeune != null) {
-            claims.put("id", jeune.getId());
-            claims.put("nom", jeune.getAppUser().getNom());
-            claims.put("prenom", jeune.getAppUser().getPrenom());
-            claims.put("mail", jeune.getAppUser().getMail());
-            claims.put("role", jeune.getROLE());
-            claims.put("confirmed",jeune.getIsConfirmed());
-            claims.put("isFirstAuth",jeune.getIsFirstAuth());
         }
 
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()

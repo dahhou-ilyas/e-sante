@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -34,7 +35,8 @@ import java.util.List;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    UserDetailsServiceImpl userDetailsService;
+    JeuneDetailsService jeuneDetailsService;
+    MedecinDetailsService medecinDetailsService;
 
 
 
@@ -55,12 +57,22 @@ public class SecurityConfig {
 
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
+    @Primary
+    public AuthenticationManager authenticationManagerJeune() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setUserDetailsService(jeuneDetailsService);
         return new ProviderManager(daoAuthenticationProvider);
     }
+
+    @Bean
+    public AuthenticationManager authenticationManagerMedecin() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(medecinDetailsService);
+        return new ProviderManager(daoAuthenticationProvider);
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
