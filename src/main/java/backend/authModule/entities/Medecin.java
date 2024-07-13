@@ -28,5 +28,6 @@ public class Medecin{
     private String specialite;
     private String ROLE="MEDECIN";
     private boolean confirmed =false;
+    private Boolean isFirstAuth = true;
 
 }

@@ -63,12 +63,16 @@ public class SecurityController {
             claims.put("prenom", medecin.getAppUser().getPrenom());
             claims.put("mail", medecin.getAppUser().getMail());
             claims.put("role", medecin.getROLE());
+            claims.put("confirmed",medecin.isConfirmed());
+            claims.put("isFirstAuth",medecin.getIsFirstAuth());
         } else if (jeune != null) {
             claims.put("id", jeune.getId());
             claims.put("nom", jeune.getAppUser().getNom());
             claims.put("prenom", jeune.getAppUser().getPrenom());
             claims.put("mail", jeune.getAppUser().getMail());
             claims.put("role", jeune.getROLE());
+            claims.put("confirmed",jeune.getIsConfirmed());
+            claims.put("isFirstAuth",jeune.getIsFirstAuth());
         }
 
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
