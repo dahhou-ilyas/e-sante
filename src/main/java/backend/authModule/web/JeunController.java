@@ -19,13 +19,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/jeunes")
 @AllArgsConstructor
 @CrossOrigin("*")
 public class JeunController {
     private JeuneService jeuneService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/jeunes/{id}")
     public ResponseEntity<?> getJeuneById(@PathVariable(value = "id") Long id) {
         try {
             Object jeune = jeuneService.getJeuneById(id);
@@ -35,7 +34,7 @@ public class JeunController {
         }
     }
 
-    @PostMapping("/scolarise")
+    @PostMapping("/register/jeunes/scolarise")
     public ResponseEntity<JeuneDTO> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
         try {
             JeuneDTO savedJeune = jeuneService.saveJeune(jeuneScolarise);
@@ -45,7 +44,7 @@ public class JeunController {
         }
     }
 
-    @PostMapping("/nonscolarise")
+    @PostMapping("/register/jeunes/nonscolarise")
     public ResponseEntity<JeuneDTO> saveJeuneNonScolarise(@RequestBody JeuneNonScolarise jeuneNonScolarise) {
         try {
             JeuneDTO savedJeune = jeuneService.saveJeune(jeuneNonScolarise);
@@ -55,7 +54,7 @@ public class JeunController {
         }
     }
 
-    @PostMapping("/{jeuneId}/antecedents/familiaux")
+    @PostMapping("/jeunes/{jeuneId}/antecedents/familiaux")
     public ResponseEntity<?> addAntecedentFamilial(@PathVariable Long jeuneId, @RequestBody AntecedentFamilial antecedentFamilial) {
         try {
             AntecedentFamilial savedAntecedentFamilial = jeuneService.addAntecedentFamilial(jeuneId, antecedentFamilial);
@@ -65,7 +64,7 @@ public class JeunController {
         }
     }
 
-    @PostMapping("/{jeuneId}/antecedents/personnels")
+    @PostMapping("/jeunes/{jeuneId}/antecedents/personnels")
     public ResponseEntity<?> addAntecedentPersonnel(@PathVariable Long jeuneId, @RequestBody AntecedentPersonnel antecedentPersonnel) {
         try {
             AntecedentPersonnel savedAntecedentPersonnel = jeuneService.addAntecedentPersonnel(jeuneId, antecedentPersonnel);
@@ -75,7 +74,7 @@ public class JeunController {
         }
     }
 
-    @GetMapping("/{jeuneId}/antecedents")
+    @GetMapping("/jeunes/{jeuneId}/antecedents")
     public ResponseEntity<?> getAntecedents(@PathVariable Long jeuneId) throws JeuneException {
         try {
             Map<String, Object> result = jeuneService.getAntecedents(jeuneId);
@@ -85,7 +84,7 @@ public class JeunController {
         }
     }
 
-    @GetMapping("/confirmation")
+    @GetMapping("/register/jeunes/confirmation")
     public ResponseEntity<?> confirmEmail(@RequestParam("token") String token) {
         Jeune jeune = jeuneService.confirmEmail(token);
         return ResponseEntity.ok("Email confirmed successfully");

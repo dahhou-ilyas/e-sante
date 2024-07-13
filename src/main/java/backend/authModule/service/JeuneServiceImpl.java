@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,11 +47,14 @@ public class JeuneServiceImpl implements JeuneService {
     private AntecedentPersonnelRepository antecedentPersonnelRepository;
 
     private JavaMailSender mailSender;
+    private PasswordEncoder passwordEncoder;
 
     private ConfirmationTokenRepository confirmationTokenRepository;
     @Override
     public JeuneDTO saveJeune(Jeune jeune) throws EmailNonValideException, PhoneNonValideException {
 
+        AppUser appUser=jeune.getAppUser();
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         if(!validatore.isValidEmail(jeune.getAppUser().getMail())){
             throw new EmailNonValideException("Invalid email format");
         }if(!validatore.isValidMoroccanPhoneNumber(jeune.getAppUser().getNumTele())){
@@ -70,7 +74,8 @@ public class JeuneServiceImpl implements JeuneService {
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(token, savedJeune);
         confirmationTokenRepository.save(confirmationToken);
-        sendConfirmationEmail(savedJeune.getAppUser().getMail(), token);
+
+        new Thread(() -> sendConfirmationEmail(savedJeune.getAppUser().getMail(), token)).start();
 
         JeuneDTO jeuneDTO=jeuneMapper.fromJeune(savedJeune);
         return jeuneDTO;
@@ -154,6 +159,16 @@ public class JeuneServiceImpl implements JeuneService {
         } else {
             throw new RuntimeException("Invalid confirmation token");
         }
+    }
+
+    @Override
+    public void sendConfirmationEmail(String to, String token) {
+        String confirmationUrl = "http://localhost:8080/register/jeunes/confirmation?token=" + token;
+        String subject = "Email Confirmation";
+        String htmlBody = "<p>Please confirm your email by clicking the following link:</p>"
+                + "<p><a href=\"" + confirmationUrl + "\">Confirm Email</a></p>";
+
+        sendEmail(to, subject, htmlBody);
     }
 
 

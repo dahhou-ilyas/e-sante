@@ -18,14 +18,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -42,11 +41,14 @@ public class MedecinServiceImpl implements MedecinService {
     private ConfirmationTokenRepository confirmationTokenRepository;
     private JavaMailSender mailSender;
 
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public MedecinResponseDTO saveMecine(Medecin medecin) throws MedecinException {
 
         try {
+            AppUser appUser=medecin.getAppUser();
+            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
             Medecin savedMedecin = medecinRepository.save(medecin);
 
             String token = UUID.randomUUID().toString();
@@ -55,7 +57,9 @@ public class MedecinServiceImpl implements MedecinService {
             confirmationToken.setCreatedDate(new Date());
             confirmationToken.setToken(token);
             confirmationTokenRepository.save(confirmationToken);
-            sendConfirmationEmail(savedMedecin.getAppUser().getMail(),token);
+
+            new Thread(() -> sendConfirmationEmail(savedMedecin.getAppUser().getMail(),token)).start();
+
             MedecinResponseDTO medecinResponseDTO = medecineMapper.fromMedcine(savedMedecin);
             return medecinResponseDTO;
         } catch (DataIntegrityViolationException e) {
@@ -135,6 +139,12 @@ public class MedecinServiceImpl implements MedecinService {
     }
 
     @Override
+    public List<MedecinResponseDTO> getAllMedecins() {
+        List<Medecin> medecins=medecinRepository.findAll();
+        return medecins.stream().map(m->medecineMapper.fromMedcine(m)).collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException {
         Optional<Medecin> medecinOptional = medecinRepository.findById(id);
         if (medecinOptional.isPresent()) {
@@ -179,6 +189,15 @@ public class MedecinServiceImpl implements MedecinService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendConfirmationEmail(String to, String token) {
+        String confirmationUrl = "http://localhost:8080/register/medecins/confirmation?token=" + token;
+        String subject = "Email Confirmation";
+        String htmlBody = "<p>Please confirm your email by clicking the following link:</p>"
+                + "<p><a href=\"" + confirmationUrl + "\">Confirm Email</a></p>";
+
+        sendEmail(to, subject, htmlBody);
     }
 
 }
