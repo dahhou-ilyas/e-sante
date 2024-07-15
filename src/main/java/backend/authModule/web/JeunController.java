@@ -35,13 +35,11 @@ public class JeunController {
     }
 
     @PostMapping("/register/jeunes/scolarise")
-    public ResponseEntity<JeuneDTO> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) {
-        try {
+    public ResponseEntity<JeuneDTO> saveJeuneScolarise(@RequestBody JeuneScolarise jeuneScolarise) throws EmailNonValideException,PhoneNonValideException{
+
             JeuneDTO savedJeune = jeuneService.saveJeune(jeuneScolarise);
             return ResponseEntity.ok(savedJeune);
-        } catch (EmailNonValideException | PhoneNonValideException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+
     }
 
     @PostMapping("/register/jeunes/nonscolarise")

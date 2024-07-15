@@ -2,13 +2,17 @@ package backend.authModule.securityConfig;
 
 import backend.authModule.entities.Jeune;
 import backend.authModule.entities.Medecin;
+import backend.authModule.exception.UsernameNotFoundException;
 import backend.authModule.repository.JeuneRepository;
 import backend.authModule.repository.MedecinRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -30,11 +34,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth/login")
 
 public class SecurityController {
-
-
-    private JwtEncoder jwtEncoder;
-    private JeuneRepository jeuneRepository;
-    private MedecinRepository medecinRepository;
+    private final JwtEncoder jwtEncoder;
+    private final JeuneRepository jeuneRepository;
+    private final MedecinRepository medecinRepository;
     private final AuthenticationManager authenticationManagerJeune;
     private final AuthenticationManager authenticationManagerMedecin;
 
@@ -51,49 +53,55 @@ public class SecurityController {
 
 
     @PostMapping("/jeunes")
-    public Map<String, String> login(@RequestBody Map<String, String> loginData) {
+    public Map<String, String> login(@RequestBody Map<String, String> loginData) throws UsernameNotFoundException {
         String username = loginData.get("username");
         String password = loginData.get("password");
 
-        Authentication authentication = authenticationManagerJeune.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password));
+        try{
+            Authentication authentication = authenticationManagerJeune.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
 
-        Instant instant = Instant.now();
+            Instant instant = Instant.now();
 
-        Jeune jeune = jeuneRepository.findByMailOrCinOrCNEOrCodeMASSAR(username).orElse(null);
+            Jeune jeune = jeuneRepository.findByMailOrCinOrCNEOrCodeMASSAR(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
 
-        String scope = authentication.getAuthorities().stream()
-                .map(a -> a.getAuthority())
-                .collect(Collectors.joining(" "));
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", username);
+            claims.put("role", scope);
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", username);
-        claims.put("role", scope);
+            if (jeune != null) {
+                claims.put("id", jeune.getId());
+                claims.put("nom", jeune.getAppUser().getNom());
+                claims.put("prenom", jeune.getAppUser().getPrenom());
+                claims.put("mail", jeune.getAppUser().getMail());
+                claims.put("confirmed", jeune.getIsConfirmed());
+                claims.put("isFirstAuth", jeune.getIsFirstAuth());
+            }
 
-        if (jeune != null) {
-            claims.put("id", jeune.getId());
-            claims.put("nom", jeune.getAppUser().getNom());
-            claims.put("prenom", jeune.getAppUser().getPrenom());
-            claims.put("mail", jeune.getAppUser().getMail());
-            claims.put("confirmed",jeune.getIsConfirmed());
-            claims.put("isFirstAuth",jeune.getIsFirstAuth());
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .issuedAt(instant)
+                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))  // Changer la durée d'expiration à 30 minutes
+                    .subject(username)
+                    .claim("claims", claims)
+                    .build();
+
+            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                    JwsHeader.with(MacAlgorithm.HS512).build(),
+                    jwtClaimsSet
+            );
+
+            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+            return Map.of("access-token", jwt);
+        }catch (AuthenticationException e) {
+            throw new BadCredentialsException("Invalid username or password");
         }
 
-        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                .issuedAt(instant)
-                .expiresAt(instant.plus(10, ChronoUnit.MINUTES))
-                .subject(username)
-                .claim("claims",claims)
-                .build();
 
-        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
-                JwsHeader.with(MacAlgorithm.HS512).build(),
-                jwtClaimsSet
-        );
-
-        String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
-        return Map.of("access-token", jwt);
     }
 
     @PostMapping("/medecins")
@@ -108,9 +116,8 @@ public class SecurityController {
 
         Medecin medecin = medecinRepository.findByCinOrMail(username).orElse(null);
 
-
         String scope = authentication.getAuthorities().stream()
-                .map(a -> a.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
         Map<String, Object> claims = new HashMap<>();
@@ -122,15 +129,15 @@ public class SecurityController {
             claims.put("nom", medecin.getAppUser().getNom());
             claims.put("prenom", medecin.getAppUser().getPrenom());
             claims.put("mail", medecin.getAppUser().getMail());
-            claims.put("confirmed",medecin.isConfirmed());
-            claims.put("isFirstAuth",medecin.getIsFirstAuth());
+            claims.put("confirmed", medecin.isConfirmed());
+            claims.put("isFirstAuth", medecin.getIsFirstAuth());
         }
 
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                 .issuedAt(instant)
-                .expiresAt(instant.plus(10, ChronoUnit.MINUTES))
+                .expiresAt(instant.plus(30, ChronoUnit.MINUTES))  // Changer la durée d'expiration à 30 minutes
                 .subject(username)
-                .claim("claims",claims)
+                .claim("claims", claims)
                 .build();
 
         JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(

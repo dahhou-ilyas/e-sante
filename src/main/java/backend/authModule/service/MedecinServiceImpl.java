@@ -47,6 +47,10 @@ public class MedecinServiceImpl implements MedecinService {
     public MedecinResponseDTO saveMecine(Medecin medecin) throws MedecinException {
 
         try {
+            if(medecinRepository.findByMail(medecin.getAppUser().getMail()).isPresent()){
+                throw new MedecinException("mail est déja existe");
+            }
+
             AppUser appUser=medecin.getAppUser();
             appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
             Medecin savedMedecin = medecinRepository.save(medecin);
