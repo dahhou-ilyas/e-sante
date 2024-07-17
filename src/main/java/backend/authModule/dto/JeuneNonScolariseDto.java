@@ -27,5 +27,5 @@ public class JeuneNonScolariseDto {
     private boolean isFirstAuth;
     private String ROLE;
     private NiveauEtudes dernierNiveauEtudes;
-    private Situation situationActuelle;
+    private boolean enactivite;
 }

@@ -2,6 +2,8 @@ package backend.authModule.securityConfig;
 
 import backend.authModule.entities.Jeune;
 import backend.authModule.entities.Medecin;
+import backend.authModule.exception.BadRequestException;
+import backend.authModule.exception.ResourceNotFoundException;
 import backend.authModule.exception.UsernameNotFoundException;
 import backend.authModule.repository.JeuneRepository;
 import backend.authModule.repository.MedecinRepository;
@@ -109,44 +111,47 @@ public class SecurityController {
         String username = loginData.get("username");
         String password = loginData.get("password");
 
-        Authentication authentication = authenticationManagerMedecin.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password));
+        try {
+            Authentication authentication = authenticationManagerMedecin.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
 
-        Instant instant = Instant.now();
+            Instant instant = Instant.now();
 
-        Medecin medecin = medecinRepository.findByCinOrMail(username).orElse(null);
+            Medecin medecin = medecinRepository.findByCinOrMail(username)
+                    .orElseThrow(() -> new ResourceNotFoundException("Medecin not found with username: " + username));
 
-        String scope = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+            String scope = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" "));
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", username);
-        claims.put("role", scope);
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("username", username);
+            claims.put("role", scope);
 
-        if (medecin != null) {
             claims.put("id", medecin.getId());
             claims.put("nom", medecin.getAppUser().getNom());
             claims.put("prenom", medecin.getAppUser().getPrenom());
             claims.put("mail", medecin.getAppUser().getMail());
             claims.put("confirmed", medecin.isConfirmed());
             claims.put("isFirstAuth", medecin.getIsFirstAuth());
+
+            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                    .issuedAt(instant)
+                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
+                    .subject(username)
+                    .claim("claims", claims)
+                    .build();
+
+            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+                    JwsHeader.with(MacAlgorithm.HS512).build(),
+                    jwtClaimsSet
+            );
+
+            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
+            return Map.of("access-token", jwt);
+        } catch (BadCredentialsException ex) {
+            throw new BadRequestException("Invalid username or password");
         }
-
-        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                .issuedAt(instant)
-                .expiresAt(instant.plus(30, ChronoUnit.MINUTES))  // Changer la durée d'expiration à 30 minutes
-                .subject(username)
-                .claim("claims", claims)
-                .build();
-
-        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
-                JwsHeader.with(MacAlgorithm.HS512).build(),
-                jwtClaimsSet
-        );
-
-        String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
-        return Map.of("access-token", jwt);
     }
 
 }
