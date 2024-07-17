@@ -19,10 +19,19 @@ public class AntecedentPersonnel {
     private Jeune jeune;
 
     @ElementCollection
+    private List<String> maladies;
+
+    private boolean utiliseMedicaments;
+    @ElementCollection
     private List<String> medicaux;
 
-    private Boolean chirurgicaux;
+    private Boolean souffreMaladiesChirurgicales;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private OperationChirurgicale operationChirurgicale;
 
-    @ElementCollection
-    private List<String> habitudes;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private Habitude habitude;
+
+
 }
