@@ -19,4 +19,5 @@ public interface MedecinService extends ConfirmeMailService<Medecin> {
     List<MedecinResponseDTO> getAllMedecins();
 
     void deleteMedecin(Long id) throws MedecinNotFoundException, MedecinException;
+    void resendToken(String email) throws MedecinException;
 }

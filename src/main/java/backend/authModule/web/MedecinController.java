@@ -71,6 +71,16 @@ public class MedecinController {
         return new RedirectView("http://localhost:3000/auth/medecins");
     }
 
+    @PostMapping("/register/resend-token")
+    public ResponseEntity<String> resendToken(@RequestParam("email") String email) {
+        try {
+            medecinService.resendToken(email);
+            return ResponseEntity.ok("Token resent successfully");
+        } catch (MedecinException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @ExceptionHandler(MedecinException.class)
     public ResponseEntity<Object> handleMedecinException(MedecinException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());

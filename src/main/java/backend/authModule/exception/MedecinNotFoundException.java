@@ -1,6 +1,6 @@
 package backend.authModule.exception;
 
-public class MedecinNotFoundException extends Exception{
+public class MedecinNotFoundException extends RuntimeException{
     public MedecinNotFoundException(String message) {
         super(message);
     }

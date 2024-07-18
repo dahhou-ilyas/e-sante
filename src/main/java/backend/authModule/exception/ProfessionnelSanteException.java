@@ -1,6 +1,6 @@
 package backend.authModule.exception;
 
-public class ProfessionnelSanteException extends Exception{
+public class ProfessionnelSanteException extends RuntimeException{
     public ProfessionnelSanteException(String message){
         super(message);
     }

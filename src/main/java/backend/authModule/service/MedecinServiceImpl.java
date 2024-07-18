@@ -131,6 +131,9 @@ public class MedecinServiceImpl implements MedecinService {
                 case "confirmed":
                     existingMedecin.setConfirmed((Boolean) value);
                     break;
+                case "isFirstAuth":
+                    existingMedecin.setIsFirstAuth((Boolean) value);
+                    break;
                 default:
                     throw new IllegalArgumentException("Invalid attribute: " + key);
             }
@@ -202,6 +205,31 @@ public class MedecinServiceImpl implements MedecinService {
                 + "<p><a href=\"" + confirmationUrl + "\">Confirm Email</a></p>";
 
         sendEmail(to, subject, htmlBody);
+    }
+
+    public void resendToken(String email) throws MedecinException {
+        Medecin medecin = medecinRepository.findByMail(email)
+                .orElseThrow(() -> new MedecinException("Medecin not found"));
+
+        // Supprimer l'ancien token s'il existe
+        ConfirmationToken existingToken = confirmationTokenRepository.findByMedecin(medecin);
+        System.out.println("**********************");
+        System.out.println(existingToken);
+        System.out.println("**********************");
+        if (existingToken != null) {
+            confirmationTokenRepository.delete(existingToken);
+            confirmationTokenRepository.flush();
+        }
+
+        // Créer et sauvegarder un nouveau token
+        ConfirmationToken newToken = new ConfirmationToken();
+        newToken.setMedecin(medecin);
+        newToken.setCreatedDate(new Date());
+        newToken.setToken(UUID.randomUUID().toString());
+        confirmationTokenRepository.save(newToken);
+
+        // Envoyer l'email de confirmation avec le nouveau token
+        sendConfirmationEmail(medecin.getAppUser().getMail(), newToken.getToken());
     }
 
 }

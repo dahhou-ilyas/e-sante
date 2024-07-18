@@ -1,6 +1,6 @@
 package backend.authModule.exception;
 
-public class InvalidResetPasswordTokenException extends Exception{
+public class InvalidResetPasswordTokenException extends RuntimeException{
     public InvalidResetPasswordTokenException(String message){
         super(message);
     }

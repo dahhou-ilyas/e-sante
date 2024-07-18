@@ -1,6 +1,6 @@
 package backend.authModule.exception;
 
-public class JeuneNotFoundException extends Exception{
+public class JeuneNotFoundException extends RuntimeException{
     public JeuneNotFoundException(String message){
         super(message);
     }

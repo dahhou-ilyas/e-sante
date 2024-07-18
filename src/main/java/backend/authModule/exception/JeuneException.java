@@ -1,6 +1,6 @@
 package backend.authModule.exception;
 
-public class JeuneException extends Exception{
+public class JeuneException extends RuntimeException{
 
     public JeuneException(String message){
         super(message);
